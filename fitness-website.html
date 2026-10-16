@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadence Fitness</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#101636;background:#f1f3fa}
+a{color:inherit}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0;flex-wrap:wrap;gap:10px}
+.logo{font-size:1.5rem;font-weight:bold;text-decoration:none}
+nav a{margin-left:18px;text-decoration:none;font-weight:bold}
+.hero{background:#2b3af7;color:#fff;border-radius:24px;padding:40px 28px;display:flex;flex-wrap:wrap;gap:28px;align-items:center}
+.hero .text{flex:1 1 300px}
+.hero h1{font-size:3rem;line-height:1.1;margin:0 0 14px}
+.hero p{margin:0;font-size:1.1rem}
+.timer{flex:1 1 260px;background:rgba(255,255,255,.15);border-radius:18px;padding:22px;text-align:center}
+.clock{font-size:5rem;font-weight:bold;line-height:1.1}
+.msg{min-height:26px;font-weight:bold}
+.bar{height:10px;background:rgba(255,255,255,.25);border-radius:10px;margin:14px 0;overflow:hidden}
+.bar div{height:100%;width:0;background:#fff}
+.btn{display:inline-block;background:#d4410c;color:#fff;border:0;border-radius:30px;padding:14px 28px;font-size:1rem;font-weight:bold;cursor:pointer;text-decoration:none}
+.btn:hover{background:#b83600}
+h2{font-size:2rem;margin:56px 0 8px}
+.lead{color:#4a5170;margin:0 0 22px}
+.grid{display:flex;flex-wrap:wrap;gap:18px}
+.card{flex:1 1 280px;background:#fff;border:1px solid #d5d9ec;border-radius:18px;padding:22px}
+.card h3{margin:0 0 4px;font-size:1.4rem}
+.len{color:#b83600;font-weight:bold;margin-bottom:10px}
+.card ul{margin:10px 0 0;padding-left:20px;color:#4a5170}
+.join{background:#101636;color:#fff;border-radius:24px;padding:40px 24px;text-align:center;margin-top:56px}
+.join p{margin:0 0 20px}
+footer{text-align:center;color:#4a5170;padding:30px 0;font-size:.9rem}
+@media(max-width:600px){.hero h1{font-size:2.2rem}.clock{font-size:4rem}nav a{margin-left:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="logo" href="#top">Cadence</a>
+  <nav><a href="#programs">Programs</a><a href="#join">Join</a></nav>
+</header>
+
+<div class="hero" id="top">
+  <div class="text">
+    <h1>Train on a rhythm.</h1>
+    <p>Short, structured workouts built on work and rest intervals. No equipment needed. Press start and try a set now.</p>
+  </div>
+  <div class="timer">
+    <div class="msg" id="msg">20 seconds work, 10 seconds rest</div>
+    <div class="clock" id="clock">20</div>
+    <div class="bar"><div id="fill"></div></div>
+    <button class="btn" id="go" type="button">Start set</button>
+  </div>
+</div>
+
+<h2 id="programs">Pick a program</h2>
+<p class="lead">Each program runs 4 weeks. Every session fits in a lunch break.</p>
+<div class="grid">
+  <div class="card">
+    <h3>Start strong</h3>
+    <div class="len">3 days a week, 20 min</div>
+    Bodyweight basics for people returning to exercise.
+    <ul><li>Mon: Full body A</li><li>Wed: Full body B</li><li>Fri: Full body A + walk</li></ul>
+  </div>
+  <div class="card">
+    <h3>Build muscle</h3>
+    <div class="len">4 days a week, 40 min</div>
+    Dumbbell and band work with weekly progress targets.
+    <ul><li>Mon: Upper push and pull</li><li>Tue: Lower body</li><li>Thu: Upper volume</li><li>Sat: Lower and core</li></ul>
+  </div>
+  <div class="card">
+    <h3>Burn and breathe</h3>
+    <div class="len">5 days a week, 25 min</div>
+    Intervals and low-impact cardio with a short cooldown.
+    <ul><li>Mon: Interval run or skip</li><li>Tue: Low-impact cardio</li><li>Wed: Mobility flow</li><li>Thu: Intervals</li><li>Sat: Long easy session</li></ul>
+  </div>
+</div>
+
+<div class="join" id="join">
+  <h2 style="margin-top:0">Ready to move?</h2>
+  <p>Pick a program, follow the timer, and see how you feel after seven days.</p>
+  <a class="btn" href="#top">Try a set now</a>
+</div>
+
+<footer>Cadence Fitness. Check with a doctor before starting a new exercise routine.</footer>
+</div>
+
+<script>
+var clock = document.getElementById("clock");
+var fill = document.getElementById("fill");
+var msg = document.getElementById("msg");
+var go = document.getElementById("go");
+var WORK = 20, REST = 10, ROUNDS = 4;
+var timer = null, phase = "work", left = WORK, round = 1;
+
+function show() {
+  var total = phase === "work" ? WORK : REST;
+  clock.textContent = left;
+  fill.style.width = ((total - left) / total * 100) + "%";
+  msg.textContent = (phase === "work" ? "Work: squats" : "Rest: breathe") + " (round " + round + " of " + ROUNDS + ")";
+}
+
+function reset(text) {
+  clearInterval(timer);
+  timer = null;
+  phase = "work"; left = WORK; round = 1;
+  clock.textContent = WORK;
+  fill.style.width = "0%";
+  msg.textContent = text;
+  go.textContent = "Start set";
+}
+
+function tick() {
+  left = left - 1;
+  if (left <= 0) {
+    if (phase === "work") {
+      phase = "rest"; left = REST;
+    } else {
+      if (round >= ROUNDS) { reset("Set complete. Nice work!"); return; }
+      round = round + 1; phase = "work"; left = WORK;
+    }
+  }
+  show();
+}
+
+go.addEventListener("click", function () {
+  if (timer) {
+    reset("20 seconds work, 10 seconds rest");
+  } else {
+    go.textContent = "Stop";
+    show();
+    timer = setInterval(tick, 1000);
+  }
+});
+</script>
+</body>
+</html>
